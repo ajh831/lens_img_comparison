@@ -29,13 +29,14 @@ def createFolder(directory):
 
 # #### 이미지 리스트에 담는 함수
 
+# <span style="font-size:13px">- totalList : 비어있는 리스트를 생성해 줘야 됨(imageList와 labelList를 담아주고 return 시키기 위해서) </span> <br>  
 # <span style="font-size:13px">- trainingFullPath : 상세분류 폴더 상위 경로 </span>  
 # <span style="font-size:13px">- IMG_SIZE : 수정할 이미지 size </span>
 
-# In[1]:
+# In[20]:
 
 
-def inImgList(trainingFullPath, IMG_SIZE):
+def inImgList(trainingFullPath, targetFolder, IMG_SIZE, totalList):
     imageList = []
     labelList = []
     for i in range (0, len(targetFolder)):
@@ -46,8 +47,7 @@ def inImgList(trainingFullPath, IMG_SIZE):
             for j in range( 0 , len(eachImages)):
                 try:
                     eachImagesPath = os.path.join(eachPath,eachImages[j])
-                    eachImg = cv2.imread(eachImagesPath)
-                    eachImg = cv2.cvtColor(eachImg, cv2.COLOR_RGB2GRAY)
+                    eachImg = imread(eachImagesPath)
                     outImg = cv2.resize(eachImg, (IMG_SIZE,IMG_SIZE))
                     imageList.append(outImg)
                     labelList.append(targetFolder[i])
@@ -78,18 +78,62 @@ def imgClean(inImg, IMG_SIZE, channel) :
     return outImg
 
 
-# #### 딕셔너라 value값으로 key값 불러오는 함수
+# #### 딕셔너리 value값으로 key값 불러오는 함수
 
 # <span style="font-size:13px">- dictionary : 딕셔너리 값 </span>  
 # <span style="font-size:13px">- val : 예측된 값 </span>  
 
-# In[9]:
+# In[11]:
 
 
-def getEmotion(dictionary, val):
+def getKey(dictionary, val):
     for key, value in dictionary.items():
          if val == value:
              return key
+
+
+# ### 한글명 이미지 읽어오기
+
+# <span style="font-size:13px">- filename : 파일명 </span>
+# <span style="font-size:13px">- flags : 기본값 컬러 </span>   
+# <span style="font-size:13px">- dtype : 기본값 데이터 타입 uint8 </span>  
+
+# In[14]:
+
+
+def imread(filename, flags=cv2.IMREAD_COLOR, dtype=np.uint8):
+    try:
+        n = np.fromfile(filename, dtype)
+        img = cv2.imdecode(n, flags)
+        return img
+    except Exception as e:
+        print(e)
+        return None
+
+
+# ### 한글명 이미지 저장하기
+
+# <span style="font-size:13px">- filename : 파일명 </span>  
+# <span style="font-size:13px">- img : 이미지 </span>  
+# <span style="font-size:13px">- params : 기본값 None </span>  
+
+# In[24]:
+
+
+def imwrite(filename, img, params=None):
+    try:
+        ext = os.path.splitext(filename)[1]
+        result, n = cv2.imencode(ext, img, params)
+
+        if result:
+            with open(filename, mode='w+b') as f:
+                n.tofile(f)
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e)
+        return False
 
 
 # In[ ]:
