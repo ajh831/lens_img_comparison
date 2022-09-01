@@ -89,7 +89,7 @@ def imgClean(inImg, IMG_SIZE, channel) :
 def getKey(dictionary, val):
     for key, value in dictionary.items():
          if val == value:
-             return key
+            return key
 
 
 # ### 한글명 이미지 읽어오기
